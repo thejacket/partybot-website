@@ -81,3 +81,4 @@ export function Header({ showMemojiPlaceholder = true }: HeaderProps) {
     </motion.header>
   );
 }
+

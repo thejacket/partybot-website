@@ -14,8 +14,9 @@ export default function Home() {
   const [viseme, setViseme] = useState<string>("");
   const [currentSection, setCurrentSection] = useState<0 | 1>(0);
 
-  const handleSectionChange = useCallback((section: number) => {
-    setCurrentSection(section === 0 ? 0 : 1);
+  // Handle snap triggered - this is called immediately when snap animation starts
+  const handleSnapTriggered = useCallback((direction: "up" | "down") => {
+    setCurrentSection(direction === "down" ? 1 : 0);
   }, []);
 
   const handleEmotionChange = useCallback((newEmotion: EmotionType) => {
@@ -43,7 +44,7 @@ export default function Home() {
         currentSection={currentSection}
       />
 
-      <ScrollProgress threshold={0.4} onSectionChange={handleSectionChange} />
+      <ScrollProgress threshold={0.4} onSnapTriggered={handleSnapTriggered} />
 
       <Hero />
 
@@ -55,3 +56,4 @@ export default function Home() {
     </main>
   );
 }
+

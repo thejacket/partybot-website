@@ -133,3 +133,4 @@ export function AnimatedMemoji({
     </motion.div>
   );
 }
+

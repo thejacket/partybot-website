@@ -111,3 +111,4 @@ Make sure you're importing the Clerk CSS or using the `appearance` prop with cus
 - [Clerk Documentation](https://clerk.com/docs)
 - [Next.js Integration](https://clerk.com/docs/quickstarts/nextjs)
 - [Customization](https://clerk.com/docs/components/customization/overview)
+

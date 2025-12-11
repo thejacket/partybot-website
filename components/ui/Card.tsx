@@ -75,3 +75,4 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
 Card.displayName = "Card";
 
 export { Card, type CardProps, type CardVariant, type CardHover, type CardPadding };
+
