@@ -10,11 +10,12 @@ interface HeaderProps {
 }
 
 const navLinks = [
-  { href: "#elevenlabs", label: "ElevenLabs x Robotics", gradient: true },
+  { href: "/elevenlabs-robotics", label: "ElevenLabs x Robotics", gradient: true },
+  { href: "/robotics-sdk", label: "Robotics SDK", gradient: true },
   { href: "#features", label: "Features" },
   { href: "#how-it-works", label: "How It Works" },
   { href: "#gallery", label: "Gallery" },
-  { href: "#pricing", label: "Pricing" },
+  { href: "/pricing", label: "Pricing" },
 ];
 
 export function Header({ showMemojiPlaceholder = true }: HeaderProps) {

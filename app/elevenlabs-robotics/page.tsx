@@ -1,512 +1,570 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
+import { useRef } from "react";
 import {
   Waves,
   Mic,
   Brain,
   Volume2,
   Timer,
-  MessageSquare,
-  Languages,
-  Bot,
-  Building2,
-  GraduationCap,
-  HeartPulse,
-  Home,
-  Headphones,
-  Check,
   Zap,
-  ExternalLink,
   ArrowRight,
+  Sparkles,
+  Bot,
+  Cpu,
+  Globe,
+  Heart,
+  Rocket,
+  Eye,
+  MessageCircle,
+  CircuitBoard,
+  Lightbulb,
+  Target,
+  Users,
+  Infinity,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
 
-const platformFeatures = [
+// Manifesto statements - bold, concise, visionary
+const manifestoStatements = [
   {
-    icon: Mic,
-    title: "Speech-to-Text Engine",
-    description: "Accurate real-time transcription with support for multiple accents and speaking styles",
-    gradient: "from-blue-500 to-cyan-500",
-    bgColor: "bg-blue-500/10",
+    statement: "Robots should talk, not just respond.",
+    description: "True conversation means understanding context, emotion, and intent in real-time.",
   },
   {
-    icon: Brain,
-    title: "LLM Integration",
-    description: "Works seamlessly with GPT-4, Claude, Gemini, and custom models",
-    gradient: "from-purple-500 to-pink-500",
-    bgColor: "bg-purple-500/10",
+    statement: "Latency is the enemy of connection.",
+    description: "Sub-300ms response times make the difference between mechanical and magical.",
   },
   {
-    icon: Volume2,
-    title: "Natural Text-to-Speech",
-    description: "Industry-leading voice synthesis with emotional range and natural cadence",
-    gradient: "from-orange-500 to-red-500",
-    bgColor: "bg-orange-500/10",
+    statement: "Every robot deserves a soul.",
+    description: "Personality isn't programmed. It's enabled through natural, emotional interaction.",
   },
+  {
+    statement: "The future of robotics is conversational.",
+    description: "Physical capability is only half the equation. Voice completes it.",
+  },
+  {
+    statement: "PartyBot is just the beginning.",
+    description: "Today entertainment. Tomorrow healthcare, education, companionship, and beyond.",
+  },
+];
+
+const visionPillars = [
   {
     icon: Timer,
     title: "Ultra-Low Latency",
-    description: "Sub-300ms end-to-end response times for natural conversations",
-    gradient: "from-green-500 to-emerald-500",
-    bgColor: "bg-green-500/10",
+    value: "<300ms",
+    description: "End-to-end response time that enables natural conversation flow",
+    gradient: "from-green-400 to-emerald-500",
   },
   {
-    icon: MessageSquare,
-    title: "Turn-Taking Detection",
-    description: "Intelligent interruption handling and natural conversation flow",
-    gradient: "from-yellow-500 to-orange-500",
-    bgColor: "bg-yellow-500/10",
+    icon: Brain,
+    title: "Contextual Intelligence",
+    value: "∞ Context",
+    description: "Deep understanding of conversation history and user intent",
+    gradient: "from-purple-400 to-pink-500",
   },
   {
-    icon: Languages,
-    title: "Multilingual Support",
-    description: "32+ languages with native-quality pronunciation and localization",
-    gradient: "from-pink-500 to-rose-500",
-    bgColor: "bg-pink-500/10",
+    icon: Heart,
+    title: "Emotional Expression",
+    value: "32+ Emotions",
+    description: "Voice that conveys empathy, excitement, curiosity, and care",
+    gradient: "from-pink-400 to-rose-500",
+  },
+  {
+    icon: Globe,
+    title: "Universal Accessibility",
+    value: "32+ Languages",
+    description: "Breaking language barriers with native-quality multilingual support",
+    gradient: "from-blue-400 to-cyan-500",
   },
 ];
 
-const technicalSpecs = [
-  { label: "Response Latency", value: "<300ms" },
-  { label: "Languages Supported", value: "32+" },
-  { label: "Voice Library", value: "1000+" },
-  { label: "Audio Quality", value: "24kHz" },
-  { label: "Uptime SLA", value: "99.9%" },
-  { label: "SDK Support", value: "5+" },
-];
-
-const useCases = [
+const futureApplications = [
+  {
+    icon: Users,
+    title: "Entertainment",
+    description: "Party hosts, game masters, and interactive experiences that bring joy",
+    timeline: "Now",
+    status: "active",
+    highlight: true,
+  },
   {
     icon: Bot,
-    title: "Interactive Party Robots",
-    description: "Create engaging entertainment experiences with personality-driven AI companions",
-    example: "PartyBot - AI game host for parties",
+    title: "Service & Hospitality",
+    description: "Concierge, reception, and customer service that feels genuinely helpful",
+    timeline: "2024",
+    status: "emerging",
   },
   {
-    icon: Building2,
-    title: "Hospitality & Concierge",
-    description: "Voice-enabled service robots for hotels, restaurants, and venues",
-    example: "Hotel check-in assistants",
+    icon: Lightbulb,
+    title: "Education",
+    description: "Patient tutors that adapt to every learning style and pace",
+    timeline: "2025",
+    status: "future",
   },
   {
-    icon: GraduationCap,
-    title: "Educational Companions",
-    description: "Interactive learning assistants that adapt to student needs",
-    example: "Language tutoring robots",
+    icon: Heart,
+    title: "Companion Robots",
+    description: "Emotional support and companionship for the elderly and those in need",
+    timeline: "2026",
+    status: "vision",
   },
   {
-    icon: HeartPulse,
-    title: "Healthcare Assistants",
-    description: "Supportive companions for elderly care and patient interaction",
-    example: "Medication reminder robots",
+    icon: Cpu,
+    title: "Healthcare Support",
+    description: "Therapy assistants, medication reminders, and wellness companions",
+    timeline: "2026",
+    status: "vision",
   },
   {
-    icon: Home,
-    title: "Smart Home Integration",
-    description: "Natural voice control for connected home devices and automation",
-    example: "Smart home hub assistants",
-  },
-  {
-    icon: Headphones,
-    title: "Customer Service Kiosks",
-    description: "Self-service terminals with human-like conversation capabilities",
-    example: "Retail assistance stations",
+    icon: Rocket,
+    title: "Space & Exploration",
+    description: "Autonomous companions for long-duration missions and remote operations",
+    timeline: "2026+",
+    status: "vision",
   },
 ];
 
-const integrationSteps = [
-  {
-    number: "01",
-    title: "Create Your Agent",
-    description: "Define your robot's personality, voice, and conversation style in the ElevenLabs dashboard",
-  },
-  {
-    number: "02",
-    title: "Configure Knowledge Base",
-    description: "Upload documents, FAQs, and custom instructions to shape your agent's expertise",
-  },
-  {
-    number: "03",
-    title: "Integrate SDK",
-    description: "Use the WebSocket API or native SDKs for Python, JavaScript, and more",
-  },
-  {
-    number: "04",
-    title: "Deploy & Scale",
-    description: "Launch your voice-enabled robot with enterprise-grade reliability",
-  },
+const techStack = [
+  { icon: Mic, label: "Speech Recognition", detail: "Real-time transcription" },
+  { icon: Brain, label: "LLM Processing", detail: "GPT-4, Claude, Gemini" },
+  { icon: Volume2, label: "Voice Synthesis", detail: "1000+ natural voices" },
+  { icon: MessageCircle, label: "Turn Detection", detail: "Natural conversation flow" },
+  { icon: Eye, label: "Visual Integration", detail: "Emotion-synced avatars" },
+  { icon: CircuitBoard, label: "Hardware SDK", detail: "Any robot platform" },
 ];
-
-const whyChooseBenefits = [
-  "Industry-leading voice quality and naturalness",
-  "Lowest latency for real-time conversations",
-  "Extensive language and accent support",
-  "Flexible LLM integration options",
-  "Enterprise-grade security and compliance",
-  "Dedicated support for robotics applications",
-];
-
-const codeExample = `from elevenlabs import ElevenLabs
-from elevenlabs.conversational_ai import ConversationalAI
-
-# Initialize the client
-client = ElevenLabs(api_key="your-api-key")
-
-# Create a conversational AI agent
-agent = ConversationalAI(
-    agent_id="your-agent-id",
-    voice_id="partybot-voice",
-)
-
-# Start a conversation session
-async def handle_audio(audio_stream):
-    async for response in agent.converse(audio_stream):
-        # Play the response audio
-        robot.play_audio(response.audio)
-        
-        # Update avatar with emotion
-        robot.set_emotion(response.emotion)
-
-# Run the conversation loop
-robot.start_listening(callback=handle_audio)`;
 
 export default function ElevenLabsRoboticsPage() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+  
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 0.15], [0, -100]);
+
   return (
-    <div className="min-h-screen bg-gray-950">
-      {/* Header */}
+    <div ref={containerRef} className="min-h-screen bg-gray-950 overflow-x-hidden">
+      {/* Fixed Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-gray-950/80 backdrop-blur-md border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl">🎉</span>
-            <span className="font-bold text-lg text-white">PartyBot</span>
+            <span className="text-2xl">🤖</span>
+            <span className="font-bold text-lg text-white">
+              ElevenLabs <span className="text-gradient">× Robotics</span>
+            </span>
           </Link>
-          <Link
-            href="/"
-            className="text-sm text-gray-400 hover:text-white transition-colors"
-          >
-            ← Back to Home
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/"
+              className="text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              ← Back to PartyBot
+            </Link>
+            <a
+              href="https://elevenlabs.io/conversational-ai"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button size="sm" variant="secondary">
+                Explore Platform
+              </Button>
+            </a>
+          </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-4xl mx-auto text-center"
-        >
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
-            <Waves className="w-4 h-4 text-primary-400" />
-            <span className="text-sm text-gray-300">
-              Powered by ElevenLabs AI Agents Platform
-            </span>
+      {/* Hero Section - Full viewport with scroll indicator */}
+      <motion.section
+        style={{ opacity: heroOpacity, y: heroY }}
+        className="relative min-h-screen flex items-center justify-center px-4 pt-20"
+      >
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-purple-500/10 rounded-full animate-[spin_60s_linear_infinite]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-pink-500/5 rounded-full animate-[spin_90s_linear_infinite_reverse]" />
+        </div>
+
+        <div className="relative z-10 max-w-5xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
+              <Waves className="w-4 h-4 text-primary-400 animate-pulse" />
+              <span className="text-sm text-gray-300">
+                The Vision for Conversational Robotics
+              </span>
+            </div>
+
+            {/* Main Title */}
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 leading-tight">
+              <span className="text-white">Where Voice</span>
+              <br />
+              <span className="text-gradient">Meets Machine</span>
+            </h1>
+
+            <p className="text-xl sm:text-2xl text-gray-400 max-w-3xl mx-auto mb-12 leading-relaxed">
+              We're building a future where every robot can{" "}
+              <span className="text-white font-medium">listen, understand, and speak</span> 
+              {" "}with the warmth and intelligence of a true companion.
+            </p>
+
+            {/* Key stat */}
+            <div className="inline-flex items-center gap-8 px-8 py-4 rounded-2xl bg-white/5 border border-white/10">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-gradient">&lt;300ms</p>
+                <p className="text-xs text-gray-500 uppercase tracking-wider">Response Time</p>
+              </div>
+              <div className="w-px h-12 bg-white/10" />
+              <div className="text-center">
+                <p className="text-3xl font-bold text-gradient">Real-time</p>
+                <p className="text-xs text-gray-500 uppercase tracking-wider">Conversation</p>
+              </div>
+              <div className="w-px h-12 bg-white/10" />
+              <div className="text-center">
+                <p className="text-3xl font-bold text-gradient">Infinite</p>
+                <p className="text-xs text-gray-500 uppercase tracking-wider">Possibilities</p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Scroll indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5 }}
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          >
+            <span className="text-xs text-gray-500 uppercase tracking-wider">Discover the Vision</span>
+            <ChevronDown className="w-5 h-5 text-gray-500 animate-bounce" />
+          </motion.div>
+        </div>
+      </motion.section>
+
+      {/* Manifesto Section */}
+      <section className="py-32 px-4 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-500/5 to-transparent pointer-events-none" />
+        
+        <div className="max-w-5xl mx-auto relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-20"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 mb-6">
+              <Sparkles className="w-4 h-4 text-purple-400" />
+              <span className="text-sm font-medium text-purple-300">Our Manifesto</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white">
+              What We <span className="text-gradient">Believe</span>
+            </h2>
+          </motion.div>
+
+          <div className="space-y-16">
+            {manifestoStatements.map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className={cn(
+                  "flex flex-col gap-4",
+                  index % 2 === 0 ? "md:items-start md:text-left" : "md:items-end md:text-right"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-mono text-primary-400">0{index + 1}</span>
+                  <div className="w-12 h-px bg-gradient-to-r from-primary-500 to-accent-500" />
+                </div>
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white max-w-2xl">
+                  "{item.statement}"
+                </h3>
+                <p className="text-lg text-gray-400 max-w-xl">
+                  {item.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* The Platform - Combined Pillars & Technology */}
+      <section className="py-24 px-4 bg-white/[0.02]">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+              The <span className="text-gradient">Platform</span>
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              ElevenLabs AI Agents - powering the next generation of conversational robots
+            </p>
+          </motion.div>
+
+          {/* Four Pillars */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            {visionPillars.map((pillar, index) => (
+              <motion.div
+                key={pillar.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card variant="glass" hover="lift" padding="lg" className="h-full text-center">
+                  <div className={cn(
+                    "w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4",
+                    "bg-gradient-to-br opacity-20",
+                    pillar.gradient
+                  )} />
+                  <pillar.icon className={cn(
+                    "w-8 h-8 mx-auto -mt-14 mb-6",
+                    `text-${pillar.gradient.split(" ")[0].replace("from-", "")}`
+                  )} style={{ 
+                    color: pillar.gradient.includes("green") ? "#4ade80" :
+                           pillar.gradient.includes("purple") ? "#c084fc" :
+                           pillar.gradient.includes("pink") ? "#f472b6" :
+                           "#38bdf8"
+                  }} />
+                  <p className="text-2xl font-bold text-gradient mb-2">{pillar.value}</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{pillar.title}</h3>
+                  <p className="text-sm text-gray-400">{pillar.description}</p>
+                </Card>
+              </motion.div>
+            ))}
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
-            <span className="text-white">Give Your Robot a</span>
-            <br />
-            <span className="text-gradient">Natural Voice</span>
-          </h1>
+          {/* Technology Stack */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {techStack.map((tech, index) => (
+              <motion.div
+                key={tech.label}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <Card variant="glass" padding="md" className="text-center h-full">
+                  <tech.icon className="w-8 h-8 mx-auto mb-3 text-primary-400" />
+                  <p className="text-sm font-medium text-white mb-1">{tech.label}</p>
+                  <p className="text-xs text-gray-500">{tech.detail}</p>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
 
-          <p className="text-gray-400 text-lg sm:text-xl max-w-2xl mx-auto mb-10">
-            Build incredible voice experiences for robotics applications using
-            the same AI platform that powers PartyBot's conversational abilities.
+          {/* Flow diagram */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mt-16 flex items-center justify-center gap-4 flex-wrap"
+          >
+            <span className="text-gray-400">Human Voice</span>
+            <ArrowRight className="w-5 h-5 text-primary-400" />
+            <span className="px-3 py-1 rounded bg-primary-500/20 text-primary-300 text-sm">Speech-to-Text</span>
+            <ArrowRight className="w-5 h-5 text-primary-400" />
+            <span className="px-3 py-1 rounded bg-purple-500/20 text-purple-300 text-sm">LLM</span>
+            <ArrowRight className="w-5 h-5 text-primary-400" />
+            <span className="px-3 py-1 rounded bg-accent-500/20 text-accent-300 text-sm">Text-to-Speech</span>
+            <ArrowRight className="w-5 h-5 text-primary-400" />
+            <span className="text-gray-400">Robot Response</span>
+          </motion.div>
+          
+          <p className="text-center text-sm text-gray-500 mt-4">
+            All in under 300ms, end-to-end
           </p>
+        </div>
+      </section>
 
+      {/* Future Applications Timeline */}
+      <section className="py-24 px-4 bg-white/[0.02]">
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+              The <span className="text-gradient">Roadmap</span>
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              From entertainment to healthcare - conversational robotics will transform every industry
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {futureApplications.map((app, index) => (
+              <motion.div
+                key={app.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card 
+                  variant="glass" 
+                  hover="lift" 
+                  padding="lg" 
+                  className={cn(
+                    "h-full relative overflow-hidden",
+                    app.highlight && "border-primary-500/50 bg-primary-500/5"
+                  )}
+                >
+                  {app.highlight && (
+                    <div className="absolute top-3 right-3">
+                      <span className="px-2 py-1 rounded-full bg-primary-500/20 text-xs font-medium text-primary-300">
+                        PartyBot
+                      </span>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={cn(
+                      "w-12 h-12 rounded-xl flex items-center justify-center",
+                      app.status === "active" ? "bg-green-500/20" :
+                      app.status === "emerging" ? "bg-yellow-500/20" :
+                      app.status === "future" ? "bg-blue-500/20" :
+                      "bg-purple-500/20"
+                    )}>
+                      <app.icon className={cn(
+                        "w-6 h-6",
+                        app.status === "active" ? "text-green-400" :
+                        app.status === "emerging" ? "text-yellow-400" :
+                        app.status === "future" ? "text-blue-400" :
+                        "text-purple-400"
+                      )} />
+                    </div>
+                    <span className={cn(
+                      "text-xs font-mono px-2 py-1 rounded",
+                      app.status === "active" ? "bg-green-500/20 text-green-400" :
+                      app.status === "emerging" ? "bg-yellow-500/20 text-yellow-400" :
+                      app.status === "future" ? "bg-blue-500/20 text-blue-400" :
+                      "bg-purple-500/20 text-purple-400"
+                    )}>
+                      {app.timeline}
+                    </span>
+                  </div>
+                  
+                  <h3 className="text-lg font-semibold text-white mb-2">{app.title}</h3>
+                  <p className="text-sm text-gray-400">{app.description}</p>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Big Vision Statement */}
+      <section className="py-32 px-4 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 via-accent-500/5 to-primary-500/10" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-500/5 rounded-full blur-3xl" />
+        </div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative z-10 max-w-4xl mx-auto text-center"
+        >
+          <Infinity className="w-16 h-16 mx-auto mb-8 text-primary-400" />
+          
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-8 leading-tight">
+            We're not building <span className="text-gradient">talking robots</span>.
+            <br />
+            We're building <span className="text-gradient">companions</span>.
+          </h2>
+          
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-12">
+            Machines that understand. That empathize. That make life a little 
+            more joyful, a little less lonely, and infinitely more connected.
+          </p>
+          
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
               href="https://elevenlabs.io/conversational-ai"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button size="lg">
-                Explore ElevenLabs Platform
-                <ExternalLink className="w-4 h-4 ml-2" />
+              <Button size="xl">
+                <Zap className="w-5 h-5 mr-2" />
+                Start Building
               </Button>
             </a>
             <Link href="/pricing">
-              <Button variant="secondary" size="lg">
+              <Button variant="secondary" size="xl">
                 Get PartyBot
+                <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
           </div>
         </motion.div>
       </section>
 
-      {/* Platform Features */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Platform <span className="text-gradient">Features</span>
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Everything you need to build voice-enabled robots with natural,
-              engaging conversations.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {platformFeatures.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card variant="glass" hover="lift" padding="lg" className="h-full">
-                  <div
-                    className={cn(
-                      "w-12 h-12 rounded-xl flex items-center justify-center mb-4",
-                      feature.bgColor
-                    )}
-                  >
-                    <feature.icon
-                      className={cn("w-6 h-6 bg-gradient-to-r bg-clip-text", feature.gradient)}
-                      style={{ color: feature.gradient.includes("blue") ? "#3b82f6" : 
-                               feature.gradient.includes("purple") ? "#a855f7" :
-                               feature.gradient.includes("orange") ? "#f97316" :
-                               feature.gradient.includes("green") ? "#22c55e" :
-                               feature.gradient.includes("yellow") ? "#eab308" :
-                               "#ec4899" }}
-                    />
-                  </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm">{feature.description}</p>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Technical Specs */}
-      <section className="py-20 px-4 bg-white/[0.02]">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Technical <span className="text-gradient">Specifications</span>
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {technicalSpecs.map((spec, index) => (
-              <motion.div
-                key={spec.label}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-              >
-                <Card variant="glass" padding="md" className="text-center">
-                  <p className="text-2xl sm:text-3xl font-bold text-gradient mb-1">
-                    {spec.value}
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-400">{spec.label}</p>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Use Cases */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Use <span className="text-gradient">Cases</span>
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              From entertainment to healthcare, voice-enabled robots are transforming
-              industries.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {useCases.map((useCase, index) => (
-              <motion.div
-                key={useCase.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <Card variant="glass" hover="lift" padding="lg" className="h-full">
-                  <useCase.icon className="w-8 h-8 text-primary-400 mb-4" />
-                  <h3 className="text-lg font-semibold text-white mb-2">
-                    {useCase.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-4">{useCase.description}</p>
-                  <div className="px-3 py-2 rounded-lg bg-gray-800/50 text-xs text-gray-300">
-                    Example: {useCase.example}
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Integration Steps */}
-      <section className="py-20 px-4 bg-white/[0.02]">
+      {/* Call to Action */}
+      <section className="py-24 px-4 border-t border-white/10">
         <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Integration <span className="text-gradient">Steps</span>
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Get your robot talking in four simple steps.
-            </p>
-          </motion.div>
-
-          <div className="space-y-8">
-            {integrationSteps.map((step, index) => (
-              <motion.div
-                key={step.number}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="flex gap-6"
-              >
-                <div className="flex-shrink-0">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-primary-500/30 flex items-center justify-center">
-                    <span className="text-lg font-bold text-gradient">
-                      {step.number}
-                    </span>
-                  </div>
-                </div>
-                <div className="pt-2">
-                  <h3 className="text-xl font-semibold text-white mb-2">
-                    {step.title}
-                  </h3>
-                  <p className="text-gray-400">{step.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Code Example */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Simple <span className="text-gradient">Integration</span>
-            </h2>
-            <p className="text-gray-400 text-lg">
-              Just a few lines of code to add voice capabilities to your robot.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <Card variant="elevated" padding="none" className="overflow-hidden">
-              {/* Terminal Header */}
-              <div className="flex items-center gap-2 px-4 py-3 bg-gray-800/50 border-b border-white/10">
-                <div className="w-3 h-3 rounded-full bg-red-500" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                <div className="w-3 h-3 rounded-full bg-green-500" />
-                <span className="ml-2 text-sm text-gray-400">robot_voice.py</span>
-              </div>
-              {/* Code */}
-              <pre className="p-6 overflow-x-auto text-sm">
-                <code className="text-gray-300 font-mono whitespace-pre">
-                  {codeExample}
-                </code>
-              </pre>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Why Choose ElevenLabs */}
-      <section className="py-20 px-4 bg-white/[0.02]">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid md:grid-cols-2 gap-8">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-                Why Choose <span className="text-gradient">ElevenLabs</span>
-              </h2>
-              <ul className="space-y-4">
-                {whyChooseBenefits.map((benefit) => (
-                  <li key={benefit} className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary-500/20 flex items-center justify-center mt-0.5">
-                      <Check className="w-4 h-4 text-primary-400" />
-                    </div>
-                    <span className="text-gray-300">{benefit}</span>
-                  </li>
-                ))}
-              </ul>
+              <Card variant="glass" padding="xl" className="h-full">
+                <Target className="w-10 h-10 text-primary-400 mb-4" />
+                <h3 className="text-2xl font-bold text-white mb-3">For Builders</h3>
+                <p className="text-gray-400 mb-6">
+                  Access the ElevenLabs AI Agents Platform and start building 
+                  voice-enabled robotics applications today.
+                </p>
+                <a
+                  href="https://elevenlabs.io/docs/conversational-ai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="secondary" className="w-full">
+                    Read the Docs
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </a>
+              </Card>
             </motion.div>
-
+            
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <Card
-                variant="glass"
-                padding="xl"
-                className="text-center border-primary-500/30"
-              >
-                <div className="w-20 h-20 rounded-2xl bg-primary-500/20 flex items-center justify-center mx-auto mb-6">
-                  <Bot className="w-10 h-10 text-primary-400" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-3">
-                  See It In Action
-                </h3>
+              <Card variant="glass" padding="xl" className="h-full border-primary-500/30">
+                <Bot className="w-10 h-10 text-primary-400 mb-4" />
+                <h3 className="text-2xl font-bold text-white mb-3">Experience It Now</h3>
                 <p className="text-gray-400 mb-6">
-                  PartyBot demonstrates the full potential of ElevenLabs AI
-                  Agents for entertainment robotics.
+                  Get PartyBot and experience the future of conversational 
+                  robotics at your next event.
                 </p>
                 <Link href="/pricing">
-                  <Button size="lg" className="w-full">
-                    Try PartyBot Demo
+                  <Button className="w-full">
+                    Get PartyBot
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
@@ -516,68 +574,60 @@ export default function ElevenLabsRoboticsPage() {
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-24 px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto text-center"
-        >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-            <span className="text-white">Ready to Build</span>
-            <br />
-            <span className="text-gradient">Voice-Enabled Robots?</span>
-          </h2>
-          <p className="text-gray-400 text-lg mb-10 max-w-2xl mx-auto">
-            Start building with ElevenLabs AI Agents today and create amazing
-            voice experiences for your robotics applications.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="https://elevenlabs.io/docs"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button size="lg">
-                <Zap className="w-4 h-4 mr-2" />
-                Start Building Free
-              </Button>
-            </a>
-            <a
-              href="https://elevenlabs.io/docs/conversational-ai"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button variant="secondary" size="lg">
-                Read Documentation
-              </Button>
-            </a>
-          </div>
-        </motion.div>
-      </section>
-
       {/* Footer */}
-      <footer className="border-t border-white/10 py-8 px-4">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-sm text-gray-500">
-            PartyBot is powered by{" "}
-            <a
-              href="https://elevenlabs.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary-400 hover:text-primary-300"
-            >
-              ElevenLabs
-            </a>{" "}
-            AI Agents Platform
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
-            © {new Date().getFullYear()} PartyBot. All rights reserved.
-          </p>
+      <footer className="border-t border-white/10 py-12 px-4 bg-gray-950">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <span className="text-2xl">🤖</span>
+              <div>
+                <p className="font-bold text-white">ElevenLabs × Robotics</p>
+                <p className="text-sm text-gray-500">The future of conversational machines</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-6">
+              <a
+                href="https://elevenlabs.io"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                ElevenLabs Platform
+              </a>
+              <a
+                href="https://elevenlabs.io/docs"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Documentation
+              </a>
+              <Link
+                href="/"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                PartyBot Home
+              </Link>
+            </div>
+          </div>
+          
+          <div className="mt-8 pt-8 border-t border-white/5 text-center">
+            <p className="text-sm text-gray-500">
+              © {new Date().getFullYear()} PartyBot. Powered by{" "}
+              <a
+                href="https://elevenlabs.io"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-400 hover:text-primary-300"
+              >
+                ElevenLabs
+              </a>
+              {" "}AI Agents Platform.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
   );
 }
-
