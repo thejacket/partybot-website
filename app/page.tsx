@@ -14,12 +14,9 @@ export default function Home() {
   const [viseme, setViseme] = useState<string>("");
   const [currentSection, setCurrentSection] = useState<0 | 1>(0);
 
-  const handleSnapTriggered = useCallback(
-    (direction: "up" | "down", targetSection: number) => {
-      setCurrentSection(targetSection === 0 ? 0 : 1);
-    },
-    []
-  );
+  const handleSectionChange = useCallback((section: number) => {
+    setCurrentSection(section === 0 ? 0 : 1);
+  }, []);
 
   const handleEmotionChange = useCallback((newEmotion: EmotionType) => {
     setEmotion(newEmotion);
@@ -46,7 +43,7 @@ export default function Home() {
         currentSection={currentSection}
       />
 
-      <ScrollProgress threshold={0.4} onSnapTriggered={handleSnapTriggered} />
+      <ScrollProgress threshold={0.4} onSectionChange={handleSectionChange} />
 
       <Hero />
 

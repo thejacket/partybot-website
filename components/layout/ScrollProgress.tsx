@@ -8,17 +8,20 @@ import { cn } from "@/lib/utils";
 interface ScrollProgressProps {
   threshold?: number;
   onSnapTriggered?: (direction: "up" | "down", targetSection: number) => void;
+  onSectionChange?: (section: number) => void;
 }
 
 export function ScrollProgress({
   threshold = 0.35,
   onSnapTriggered,
+  onSectionChange,
 }: ScrollProgressProps) {
   const [progress, setProgress] = useState(0);
   const [direction, setDirection] = useState<"up" | "down">("down");
   const [currentSection, setCurrentSection] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
+  const lastSection = useRef(0);
   const isSnapping = useRef(false);
 
   const handleScroll = useCallback(() => {
@@ -41,6 +44,12 @@ export function ScrollProgress({
     // Calculate current section
     const section = Math.floor(scrollY / windowHeight);
     setCurrentSection(section);
+    
+    // Notify parent of section change
+    if (section !== lastSection.current) {
+      lastSection.current = section;
+      onSectionChange?.(section);
+    }
 
     // Hide at bottom of page
     setIsVisible(scrollY < maxScroll - 100);
@@ -71,7 +80,7 @@ export function ScrollProgress({
         isSnapping.current = false;
       }, 500);
     }
-  }, [threshold, onSnapTriggered]);
+  }, [threshold, onSnapTriggered, onSectionChange]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
